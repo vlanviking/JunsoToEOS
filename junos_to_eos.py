@@ -411,7 +411,8 @@ def main():
     ap = argparse.ArgumentParser(description='Convert Junos *set* file to EOS config')
     ap.add_argument('file', help='Path to Junos *set* commands file')
     args = ap.parse_args()
-    cfg = parse_junos_set(open(args.file).read())
+    with open(args.file) as fh:
+        cfg = parse_junos_set(fh.read())
     print(emit_eos(cfg))
 
 if __name__ == '__main__':
