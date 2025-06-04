@@ -221,12 +221,12 @@ def emit_acls(acls: dict):
             action = 'permit' if action in ('accept', 'pass') else 'deny'
             proto = cond.get('protocol', 'ip')
             src = cidr_to_acl(cond.get('source-address', 'any'))
+            if proto in ('tcp', 'udp') and 'source-port' in cond:
+                src += f' eq {cond["source-port"]}'
             dst = cidr_to_acl(cond.get('destination-address', 'any'))
+            if proto in ('tcp', 'udp') and 'destination-port' in cond:
+                dst += f' eq {cond["destination-port"]}'
             line = f' {seq} {action} {proto} {src} {dst}'
-            if 'destination-port' in cond:
-                line += f' eq {cond["destination-port"]}'
-            if 'source-port' in cond:
-                line += f' eq {cond["source-port"]}'
             if not cond:  # unmatched complex term
                 line = f' {seq} remark TODO convert term {t_name} (complex match)'
             out.append(line)
