@@ -1,4 +1,4 @@
-# PaloAltoEDL
+# Junos-to-eos
 
 This repository contains miscellaneous scripts. The `junos_to_eos.py` script
 can convert Juniper Junos `set` commands into an Arista EOS configuration.
