@@ -132,14 +132,21 @@ def parse_junos_set(text: str):
         if line.startswith('set firewall family inet filter '):
             tokens = line.split()
             fname = tokens[5]
-            term = tokens[tokens.index('term') + 1]
+            if 'term' not in tokens:
+                continue  # ignore lines without a term specification
+            t_idx = tokens.index('term')
+            if t_idx + 1 >= len(tokens):
+                continue  # malformed line
+            term = tokens[t_idx + 1]
             cfg['acls'].setdefault(fname, {}).setdefault(term, {'conditions': {}, 'action': None})
-            remainder = tokens[tokens.index('term') + 2:]
-            if remainder[0] == 'from':
+            remainder = tokens[t_idx + 2:]
+            if not remainder:
+                continue
+            if remainder[0] == 'from' and len(remainder) >= 3:
                 key = remainder[1]
                 val = ' '.join(remainder[2:])
                 cfg['acls'][fname][term]['conditions'][key] = val
-            elif remainder[0] == 'then':
+            elif remainder[0] == 'then' and len(remainder) >= 2:
                 cfg['acls'][fname][term]['action'] = remainder[1]
 
         # ---------------- OSPF ----------------
